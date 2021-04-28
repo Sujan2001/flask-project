@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+#myVideo{
+    width: 100%;
+    position: absolute;
+}
+*{
+    margin: 0;
+}
+body::-webkit-scrollbar {
+  display: none;
+}
+
+h1{
+  white-space: nowrap;
+  overflow: hidden;    
+  font-family: 'Source Code Pro', monospace;  
+  color:white;
+  font-size: 2rem;
+  position: absolute;
+  top: 30%;
+  background-color:rgba(0,0,0,0.4);
+  left: 41%;
+}
+
+/* Animation */
+h1{
+  animation: animated-text 2s steps(30,end) 1s 1 normal both;
+}
+
+/* text animation */
+
+@keyframes animated-text{
+  from{width: 0;}
+  to{width: 265px;padding: 15px;}
+}
+h2{
+    color: white;
+    position: absolute;
+  top: 50%;
+  padding: 20px;
+  background-color:rgba(0,0,0,0.4);
+  left: 38%;
+  font-size: 2rem;
+  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.button{
+    top:65%;
+    left: 47%;
+    position:absolute;
+    width: 150px;
+    height: 40px;
+    border-radius: 49px;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+    transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.button:hover{
+    color: white;
+background-color: black;
+}
+.button:hover a{
+color: white;
+}
+.button:after {
+  content: ' \02C3';
+}
+a{
+    color: black;
+    text-decoration: none;
+    transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+/* a:hover{
+    color: white;
+} */
+</style>
+</head>
+<body>
+
+<video autoplay muted loop id="myVideo">
+  <source src={{ url_for('static', filename="bg-video.mp4") }} type="video/mp4">
+  Your browser does not support HTML5 video.
+</video>
+<div style="height: 100vh; position: relative;  background-color: rgba(0,0,0,0.5); 
+z-index: 2;">
+<h1>Open-Lab Python</h1>
+<h2 class="h2">Priority Queue - 
+  <span
+     class="txt-rotate"
+     data-period="2000"
+     data-rotate='[ "Construction", "Deletion", "Downheap", "Upheap" ]'></span>
+</h2>
+
+<button class="button" ><a href="/priority_queue">Visualization Here</a>
+    </button>
+</div>
+<script>
+    var TxtRotate = function(el, toRotate, period) {
+  this.toRotate = toRotate;
+  this.el = el;
+  this.loopNum = 0;
+  this.period = parseInt(period, 10) || 2000;
+  this.txt = '';
+  this.tick();
+  this.isDeleting = false;
+};
+
+TxtRotate.prototype.tick = function() {
+  var i = this.loopNum % this.toRotate.length;
+  var fullTxt = this.toRotate[i];
+
+  if (this.isDeleting) {
+    this.txt = fullTxt.substring(0, this.txt.length - 1);
+  } else {
+    this.txt = fullTxt.substring(0, this.txt.length + 1);
+  }
+
+  this.el.innerHTML = '<span class="wrap">'+this.txt+'</span>';
+
+  var that = this;
+  var delta = 300 - Math.random() * 100;
+
+  if (this.isDeleting) { delta /= 2; }
+
+  if (!this.isDeleting && this.txt === fullTxt) {
+    delta = this.period;
+    this.isDeleting = true;
+  } else if (this.isDeleting && this.txt === '') {
+    this.isDeleting = false;
+    this.loopNum++;
+    delta = 500;
+  }
+
+  setTimeout(function() {
+    that.tick();
+  }, delta);
+};
+
+window.onload = function() {
+    var h2=document.querySelector(".h2");
+    var b=document.querySelector(".button");
+    h2.style.display = "none";
+    b.style.display = "none";
+    setTimeout(()=>{
+        h2.style.display = "block";
+        b.style.display = "inline-block";
+        var elements = document.getElementsByClassName('txt-rotate');
+  for (var i=0; i<elements.length; i++) {
+    var toRotate = elements[i].getAttribute('data-rotate');
+    var period = elements[i].getAttribute('data-period');
+    if (toRotate) {
+      new TxtRotate(elements[i], JSON.parse(toRotate), period);
+    }
+  }
+  // INJECT CSS
+  var css = document.createElement("style");
+  css.type = "text/css";
+  css.innerHTML = ".txt-rotate > .wrap { border-right: 0.08em solid #666 }";
+  document.body.appendChild(css);
+    },3000)
+  
+};
+</script>
+
+</body>
+</html>
